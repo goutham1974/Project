@@ -1,31 +1,49 @@
+// src/services/authService.js
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api';
+// Use environment variable with fallback to deployed backend
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://project-backend-rw6p.onrender.com/api';
+
+// Create axios instance
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 10000,
+});
 
 const authService = {
   // Signup
-  signup: (userData) => axios.post(`${API_BASE_URL}/auth/signup`, userData),
+  signup: (userData) => {
+    console.log('API URL:', API_BASE_URL);
+    return axiosInstance.post('/auth/signup', userData);
+  },
   
   // Login
-  login: (credentials) => axios.post(`${API_BASE_URL}/auth/login`, credentials),
+  login: (credentials) => {
+    console.log('API URL:', API_BASE_URL);
+    return axiosInstance.post('/auth/login', credentials);
+  },
   
   // Logout
   logout: () => {
     localStorage.removeItem('user');
-    return axios.post(`${API_BASE_URL}/auth/logout`);
+    return axiosInstance.post('/auth/logout');
   },
   
   // Get current user
-  getCurrentUser: (userId) => axios.get(`${API_BASE_URL}/auth/user/${userId}`),
+  getCurrentUser: (userId) => axiosInstance.get(`/auth/user/${userId}`),
   
   // Change password
   changePassword: (userId, oldPassword, newPassword) => 
-    axios.post(`${API_BASE_URL}/auth/change-password`, null, {
+    axiosInstance.post('/auth/change-password', null, {
       params: { userId, oldPassword, newPassword }
     }),
   
   // Store user in localStorage
   storeUser: (user) => {
+    console.log('Storing user:', user);
     localStorage.setItem('user', JSON.stringify(user));
   },
   
